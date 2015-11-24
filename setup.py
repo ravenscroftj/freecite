@@ -6,12 +6,12 @@ setup(
     py_modules = ['freecite'],
     #install requirements
     install_requires = [            
-            'requests==1.1.0'],
+            'requests==1.1.0'
+    ],
 
     #author details
     author = "James Ravenscroft",
     author_email = "ravenscroftj@gmail.com",
     description = "A wrapper around the FreeCite REST API",
-    url="http://wwww.github.com/ravenscroftj/freecite"
+    url = "http://wwww.github.com/ravenscroftj/freecite"
 )
-
