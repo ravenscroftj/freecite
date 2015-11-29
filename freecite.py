@@ -14,8 +14,15 @@ __all__ = ["Client"]
 class Client(object):
     def __init__(self, endpoint="http://freecite.library.brown.edu/citations/create"):
         self.endpoint = endpoint
-        
+
     def parse(self, citationstring):
+
+        def gettext(tag):
+            if citation.find(tag) is not None:
+                return citation.find(tag).text
+            else:
+                return ''
+
         r = requests.post(self.endpoint, 
                           data={"citation" : citationstring}, 
                           headers={"Accept": "text/xml"} )
@@ -25,10 +32,10 @@ class Client(object):
         citation = etree.find("citation")
         
         return { "authors": [ a.text for a in citation.iter("author")], 
-               "title": citation.find("title").text, 
-               "journal" : citation.find("journal").text,
-               "volume" : citation.find("volume").text,
-               "pages" : citation.find("pages").text
+               "title": gettext("title"),
+               "journal" : gettext("journal"),
+               "volume" : gettext("volume"),
+               "pages" : gettext("pages")
         }
 
     def parse_many(self, citations):
