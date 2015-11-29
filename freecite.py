@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 '''
 Created on 22 Nov 2015
 
@@ -27,7 +28,7 @@ class Client(object):
                           data={"citation" : citationstring}, 
                           headers={"Accept": "text/xml"} )
         
-        etree = ET.fromstring(r.text)
+        etree = ET.fromstring(r.text.encode('utf-8'))
              
         citation = etree.find("citation")
         
@@ -39,20 +40,27 @@ class Client(object):
         }
 
     def parse_many(self, citations):
+
+        def gettext(tag):
+            if citation.find(tag) is not None:
+                return citation.find(tag).text
+            else:
+                return ''
+
         r = requests.post(self.endpoint, 
                           data={"citation[]" : citations }, 
                           headers={"Accept": "text/xml"} )
 
 
-        etree = ET.fromstring(r.text)
+        etree = ET.fromstring(r.text.encode('utf-8'))
 
         for citation in etree.findall("citation"):
                   
             yield { "authors": [ a.text for a in citation.iter("author")], 
-                   "title": citation.find("title").text, 
-                   "journal" : citation.find("journal").text,
-                   "volume" : citation.find("volume").text,
-                   "pages" : citation.find("pages").text
+                   "title": gettext("title"),
+                   "journal" : gettext("journal"),
+                   "volume" : gettext("volume"),
+                   "pages" : gettext("pages")
             }
   
         
