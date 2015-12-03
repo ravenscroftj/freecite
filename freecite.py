@@ -16,13 +16,15 @@ class Client(object):
     def __init__(self, endpoint="http://freecite.library.brown.edu/citations/create"):
         self.endpoint = endpoint
 
+    def _gettext(self,citation, tag):
+        if citation.find(tag) is not None:
+            return citation.find(tag).text
+        else:
+            return ''
+
     def parse(self, citationstring):
 
-        def gettext(tag):
-            if citation.find(tag) is not None:
-                return citation.find(tag).text
-            else:
-                return ''
+
 
         r = requests.post(self.endpoint, 
                           data={"citation" : citationstring}, 
@@ -33,19 +35,14 @@ class Client(object):
         citation = etree.find("citation")
         
         return { "authors": [ a.text for a in citation.iter("author")], 
-               "title": gettext("title"),
-               "journal" : gettext("journal"),
-               "volume" : gettext("volume"),
-               "pages" : gettext("pages")
+               "title": self._gettext(citation,"title"),
+               "journal" : self._gettext(citation,"journal"),
+               "volume" : self._gettext(citation,"volume"),
+               "pages" : self._gettext(citation,"pages"),
+               "raw_string" : self._gettext(citation,"raw_string")
         }
 
     def parse_many(self, citations):
-
-        def gettext(tag):
-            if citation.find(tag) is not None:
-                return citation.find(tag).text
-            else:
-                return ''
 
         r = requests.post(self.endpoint, 
                           data={"citation[]" : citations }, 
@@ -57,10 +54,11 @@ class Client(object):
         for citation in etree.findall("citation"):
                   
             yield { "authors": [ a.text for a in citation.iter("author")], 
-                   "title": gettext("title"),
-                   "journal" : gettext("journal"),
-                   "volume" : gettext("volume"),
-                   "pages" : gettext("pages")
+                   "title": self._gettext(citation,"title"),
+                   "journal" : self._gettext(citation,"journal"),
+                   "volume" : self._gettext(citation,"volume"),
+                   "pages" : self._gettext(citation,"pages"),
+                   "raw_string" : self._gettext(citation,"raw_string")
             }
   
         
